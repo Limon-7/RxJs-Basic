@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
-import { EMPTY, combineLatest, Subject } from 'rxjs';
+import { EMPTY, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { ProductService } from './product.service';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap, startWith } from 'rxjs/operators';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 
 @Component({
@@ -13,22 +13,35 @@ import { ProductCategoryService } from '../product-categories/product-category.s
 export class ProductListComponent {
   pageTitle = 'Product List';
   errorMessage = '';
-  selectedCategoryId = 1;
-  categorySelectSubject = new Subject<number>();
-  categorySelectSubject$ = this.categorySelectSubject.asObservable();
+  // categorySelectSubject = new Subject<number>();
+  categorySelectSubject = new BehaviorSubject<number>(0);
+  categorySelectAction$ = this.categorySelectSubject.asObservable();
 
   products$ = combineLatest([
     this.productService.productWithCatagory$,
-    this.categorySelectSubject$
-  ])
-    // products$ = this.productService.productWithCatagory$
-    .pipe(
-      catchError(err => {
-        this.errorMessage = err;
-        return EMPTY;
-      }
+    this.categorySelectAction$
+    // use when subject use
+    // .pipe(startWith(0))
+  ]).pipe(
+    map(([products, selectedCategoryId]) =>
+      products.filter(product =>
+        selectedCategoryId ? selectedCategoryId === product.categoryId : true
       )
-    );
+    ),
+    catchError(err => {
+      this.errorMessage = err;
+      return EMPTY;
+    })
+  );
+  // TODO category name show
+  // products$ = this.productService.productWithCatagory$
+  // .pipe(
+  //   catchError(err => {
+  //     this.errorMessage = err;
+  //     return EMPTY;
+  //   }
+  //   )
+  // );
   categories$ = this.categoryService.productCategories$
     .pipe(
       catchError(err => {
@@ -36,14 +49,14 @@ export class ProductListComponent {
         return EMPTY;
       })
     );
-  productSimpleFilter$ = this.productService.productWithCatagory$
-    .pipe(
-      map(products =>
-        products.filter(product =>
-          this.selectedCategoryId ? product.categoryId === this.selectedCategoryId : true
-        )
-      )
-    );
+  // productSimpleFilter$ = this.productService.productWithCatagory$
+  //   .pipe(
+  //     map(products =>
+  //       products.filter(product =>
+  //         this.selectedCategoryId ? product.categoryId === this.selectedCategoryId : true
+  //       )
+  //     )
+  //   );
 
   constructor(private productService: ProductService, private categoryService: ProductCategoryService) { }
 
