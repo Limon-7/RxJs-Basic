@@ -44,6 +44,7 @@ export class ProductService {
   // Todo update selected id
   // private productSelectedSubject = new BehaviorSubject<number>(0);
   // productSelectedAction$ = this.productSelectedSubject.asObservable();
+  // select single product
   selectedProduct$ = this.productWithCatagory$
     .pipe(
       map(products =>
