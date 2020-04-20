@@ -1,0 +1,26 @@
+<div
+  *ngIf="filterMails?.length === 0"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  fxFlexFill
+>
+  <mat-spinner color="accent" diameter="80" *ngIf="showSpinner"></mat-spinner>
+  <span *ngIf="!showSpinner" class="no-messages-text hint-text">{{
+    "MAIL.NO_MESSAGES" | translate
+  }}</span>
+</div>
+
+<div class="mail-list" [@animateStagger]="{ value: '50' }" *ngIf="filterMails">
+  <mail-list-item
+    matRipple
+    *ngFor="let mail of filterMails"
+    [mail]="mail"
+    [ngClass]="{
+      'current-mail mat-accent-50-bg':
+        mail?.messageId === selectedMail?.messageId
+    }"
+    (click)="onSelected(mail)"
+    [@animate]="{ value: '*', params: { y: '100%' } }"
+  >
+  </mail-list-item>
+</div>

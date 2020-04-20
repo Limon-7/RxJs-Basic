@@ -1,0 +1,131 @@
+<div class="dialog-content-wrapper">
+  <mat-toolbar class="mat-accent m-0">
+    <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+      <span class="title dialog-title">New Message</span>
+      <button
+        mat-icon-button
+        (click)="matDialogRef.close()"
+        aria-label="Close dialog"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+
+  <div mat-dialog-content class="p-24 m-0" fusePerfectScrollbar>
+    <form
+      (ngSubmit)="sendEmail()"
+      name="composeForm"
+      [formGroup]="composeForm"
+      class="compose-form"
+      fxLayout="column"
+      fxFlex
+    >
+      <mat-form-field appearance="outline">
+        <mat-label>From</mat-label>
+        <input
+          matInput
+          name="senderMail"
+          formControlName="senderMail"
+          type="email"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>To</mat-label>
+        <input
+          matInput
+          name="receiverMail"
+          formControlName="receiverMail"
+          type="email"
+          required
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Subject</mat-label>
+        <input matInput name="subject" formControlName="subject" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Message</mat-label>
+        <textarea matInput name="content" formControlName="content" rows="6">
+        </textarea>
+      </mat-form-field>
+      <!-- Attachments -->
+      <div class="attachment-list">
+        <div
+          class="attachment"
+          fxLayout="row"
+          fxLayoutAlign="space-between center"
+          *ngFor="let file of showfiles"
+        >
+          <div>
+            <span class="filename">{{ file.name }}</span>
+            <span class="size">({{ file.size }})</span>
+          </div>
+
+          <button
+            mat-icon-button
+            aria-label="Delete attachment"
+            (click)="deleteAttachment(file)"
+          >
+            <mat-icon class="s-16">close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <input
+          type="file"
+          #file
+          name="attachments"
+          style="display: none;"
+          (change)="onFilesAdded($event)"
+          multiple
+        />
+      </div>
+    </form>
+  </div>
+  <!-- garbage -->
+  <div
+    mat-dialog-actions
+    class="m-0 p-16"
+    fxLayout="row"
+    fxLayoutAlign="space-between center"
+  >
+    <div>
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="sendEmail()"
+        class="save-button"
+        [disabled]="composeForm.invalid"
+        aria-label="SAVE"
+      >
+        SEND
+      </button>
+
+      <button mat-icon-button matTooltip="Attach a file" (click)="addFiles()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+    </div>
+
+    <button
+      mat-icon-button
+      (click)="matDialogRef.close(['delete', composeForm])"
+      aria-label="Delete"
+      matTooltip="Delete"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
+<!-- input file -->
+<!-- <input
+  type="file"
+  #file
+  style="display: none;"
+  (change)="onFilesAdded($event)"
+  multiple
+/> -->
